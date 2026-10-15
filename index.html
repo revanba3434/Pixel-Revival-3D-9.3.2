@@ -128,12 +128,8 @@
                     listEl.innerHTML = '<li style="color: #888;">No active matches right now</li>';
                 } else {
                     listEl.innerHTML = rooms.map(r => {
-                        const playerNames = (r.players && r.players.length > 0)
-                            ? r.players.map(p => p.name).join(', ')
-                            : '';
-                        const playersStr = playerNames ? ` (${playerNames})` : '';
                         const countText = `${r.player_count} ${r.player_count === 1 ? 'player' : 'players'}`;
-                        return `<li><strong>${r.map || 'Unknown Map'}</strong> &mdash; ${r.mode || 'Match'} [${countText}]${playersStr}</li>`;
+                        return `<li><strong>${r.map || 'Unknown Map'}</strong> &mdash; ${r.mode || 'Match'} [${countText}]</li>`;
                     }).join('');
                 }
             } catch (e) {
