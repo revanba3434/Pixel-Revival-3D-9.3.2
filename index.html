@@ -13,7 +13,7 @@
         body {
             font-family: sans-serif;
             text-align: center;
-            padding: 50px;
+            padding: 50px 20px;
             background-color: #121212;
             color: #ffffff;
         }
@@ -62,16 +62,24 @@
         .maps-list {
             list-style: none;
             padding: 0;
-            margin: 10px auto;
-            max-width: 420px;
+            margin: 15px auto;
+            max-width: 540px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .maps-list li {
             background-color: #1e1e1e;
-            padding: 10px 15px;
-            margin: 8px 0;
-            border-radius: 5px;
+            padding: 12px 18px;
+            border-radius: 6px;
             font-size: 1rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: block;
+            text-align: center;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -120,10 +128,12 @@
                     listEl.innerHTML = '<li style="color: #888;">No active matches right now</li>';
                 } else {
                     listEl.innerHTML = rooms.map(r => {
-                        const playersStr = (r.players && r.players.length > 0)
-                            ? ` (${r.players.map(p => p.name).join(', ')})`
+                        const playerNames = (r.players && r.players.length > 0)
+                            ? r.players.map(p => p.name).join(', ')
                             : '';
-                        return `<li><strong>${r.map || 'Unknown Map'}</strong> - ${r.mode || 'Match'} [${r.player_count} ${r.player_count === 1 ? 'player' : 'players'}]${playersStr}</li>`;
+                        const playersStr = playerNames ? ` (${playerNames})` : '';
+                        const countText = `${r.player_count} ${r.player_count === 1 ? 'player' : 'players'}`;
+                        return `<li><strong>${r.map || 'Unknown Map'}</strong> &mdash; ${r.mode || 'Match'} [${countText}]${playersStr}</li>`;
                     }).join('');
                 }
             } catch (e) {
