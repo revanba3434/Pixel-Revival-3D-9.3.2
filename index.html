@@ -22,6 +22,12 @@
             color: #ffd700;
         }
 
+        h2 {
+            color: #ffd700;
+            margin-top: 40px;
+            font-size: 1.4rem;
+        }
+
         a {
             display: inline-block;
             margin-top: 20px;
@@ -35,6 +41,37 @@
 
         a:hover {
             background-color: #e6c200;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .online {
+            color: #4cd137;
+            font-weight: bold;
+        }
+
+        .offline {
+            color: #e84118;
+            font-weight: bold;
+        }
+
+        .maps-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px auto;
+            max-width: 420px;
+        }
+
+        .maps-list li {
+            background-color: #1e1e1e;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 5px;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -50,5 +87,56 @@
     <a href="https://github.com/revanba3434/Pixel-Revival-3D-9.3.2/releases">
         Download APK &amp; IPA Releases
     </a>
+
+    <h2>Server Status</h2>
+    <div class="status-box">
+        <p>Server: <span id="serverStatus" class="online">Checking...</span></p>
+        <p>Players Online: <strong id="playerCount">0</strong></p>
+        <p style="margin-top: 15px; font-weight: bold;">Current Matches:</p>
+        <ul id="matchesList" class="maps-list">
+            <li style="color: #888;">No active matches right now</li>
+        </ul>
+    </div>
+
+    <script>
+        const API_URL = 'https://pixelgunserver123.pixely.cc.cd:8443/api/online';
+
+        async function updateStats() {
+            try {
+                const res = await fetch(API_URL, { cache: 'no-store' });
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+
+                const statusEl = document.getElementById('serverStatus');
+                statusEl.textContent = 'Online';
+                statusEl.className = 'online';
+
+                document.getElementById('playerCount').textContent = data.total_online || 0;
+
+                const listEl = document.getElementById('matchesList');
+                const rooms = data.rooms || [];
+
+                if (rooms.length === 0) {
+                    listEl.innerHTML = '<li style="color: #888;">No active matches right now</li>';
+                } else {
+                    listEl.innerHTML = rooms.map(r => {
+                        const playersStr = (r.players && r.players.length > 0)
+                            ? ` (${r.players.map(p => p.name).join(', ')})`
+                            : '';
+                        return `<li><strong>${r.map || 'Unknown Map'}</strong> - ${r.mode || 'Match'} [${r.player_count} ${r.player_count === 1 ? 'player' : 'players'}]${playersStr}</li>`;
+                    }).join('');
+                }
+            } catch (e) {
+                const statusEl = document.getElementById('serverStatus');
+                statusEl.textContent = 'Offline';
+                statusEl.className = 'offline';
+                document.getElementById('playerCount').textContent = '0';
+                document.getElementById('matchesList').innerHTML = '<li style="color: #888;">Server unreachable</li>';
+            }
+        }
+
+        updateStats();
+        setInterval(updateStats, 5000);
+    </script>
 </body>
 </html>
